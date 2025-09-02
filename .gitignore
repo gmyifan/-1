@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+**/node_modules/
+npm-debug.log*
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+**/build/
+.parcel-cache/
+.cache/
+
+# Nested repo (ignore to避免嵌套仓库问题)
+exam-system/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Editor
+.idea/
+.vscode/
+*.swp

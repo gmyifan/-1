@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>网络安全与信息化知识测试题 - 简洁版考试</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>网络安全与信息化知识测试题</h1>
+      <p class="subtitle">简洁版在线考试 · 90分钟 · 总分100</p>
+    </header>
+
+    <main id="app" class="app-container">
+      <!-- 开始页 -->
+      <section id="screen-start" class="screen active">
+        <div class="card">
+          <h2>考试说明</h2>
+          <ul>
+            <li>单选 50题×1分</li>
+            <li>判断 20题×1分</li>
+            <li>多选 20题×1.5分</li>
+            <li>总分100分 · 时长90分钟</li>
+          </ul>
+          <div class="actions">
+            <button id="btn-start" class="btn primary">开始答题</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 答题页 -->
+      <section id="screen-exam" class="screen">
+        <div class="exam-topbar">
+          <div><span id="timer">90:00</span></div>
+          <div>剩余：<span id="remaining-count">0</span> 题</div>
+        </div>
+
+        <div class="exam-layout">
+          <aside class="navigator" id="navigator"></aside>
+          <section class="question-area">
+            <div id="question-container"></div>
+            <div class="exam-actions">
+              <button id="btn-prev" class="btn">上一题</button>
+              <button id="btn-next" class="btn">下一题</button>
+              <button id="btn-next-unanswered" class="btn">跳到下一未答</button>
+              <button id="btn-submit" class="btn danger">提交试卷</button>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- 结果页 -->
+      <section id="screen-result" class="screen">
+        <div class="card">
+          <h2>考试结果</h2>
+          <p class="score-line">分数：<strong id="score">0</strong></p>
+          <p id="pass-text" class="pass-text"></p>
+          <div class="actions">
+            <button id="btn-export" class="btn primary">下载错题 Word</button>
+            <button id="btn-restart" class="btn">重新开始</button>
+          </div>
+          <div id="answer-review" class="answer-review"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">© 2025 简洁考试 · Apple 风格</footer>
+    <!-- 文档导出库（docx 浏览器版） -->
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+    <script src="./app.js"></script>
+  </body>
+  </html>
+
+
