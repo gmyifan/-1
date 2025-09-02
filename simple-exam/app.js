@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const passTextEl = document.getElementById("pass-text");
   const answerReviewEl = document.getElementById("answer-review");
 
-  const MD_PATH = "../题库.md"; // 顶层题库
+  const MD_PATH = "./题库.md"; // 站点同目录题库（便于 GitHub Pages 部署）
   const STORAGE_KEY = "simpleExamStateV1";
 
   /**
