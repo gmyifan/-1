@@ -290,9 +290,11 @@ document.addEventListener("DOMContentLoaded", () => {
     answerReviewEl.innerHTML = detail
       .map((d) => {
         const prefix = d.ok ? "✅" : "❌";
+        const correctRich = formatLettersWithText(d.q, d.correct);
+        const chosenRich = d.chosen.length ? formatLettersWithText(d.q, d.chosen) : "未作答";
         return `<div class="card"><div>${prefix} 第${d.idx + 1}题（${labelOf(d.q.type)}）${escapeHtml(
           d.q.title
-        )}</div><div>正确答案：${d.correct.join("") || "-"}；你的答案：${d.chosen.join("") || "未作答"}</div></div>`;
+        )}</div><div>正确答案：${correctRich}；你的答案：${chosenRich}</div></div>`;
       })
       .join("");
     showScreen("result");
@@ -316,8 +318,8 @@ document.addEventListener("DOMContentLoaded", () => {
     wrong.forEach((d, i) => {
       blocks.push({ type: "h2", text: `错题 ${i + 1}` });
       blocks.push({ type: "p", text: d.q.title });
-      blocks.push({ type: "p", text: `正确答案：${d.correct.join("") || "-"}` });
-      blocks.push({ type: "p", text: `你的答案：${d.chosen.join("") || "未作答"}` });
+      blocks.push({ type: "p", text: `正确答案：${lettersWithTextPlain(d.q, d.correct) || "-"}` });
+      blocks.push({ type: "p", text: `你的答案：${d.chosen.length ? lettersWithTextPlain(d.q, d.chosen) : "未作答"}` });
     });
     await buildAndDownloadDocx(blocks);
   }
@@ -351,6 +353,31 @@ document.addEventListener("DOMContentLoaded", () => {
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#39;");
+  }
+
+  /**
+   * 将字母列表转为“字母，文本”形式（HTML 格式，分号分隔）
+   */
+  function formatLettersWithText(q, letters) {
+    const map = optionMapOf(q);
+    return letters
+      .map((ch) => `${ch}，${escapeHtml(map[ch] || "")}`)
+      .join("；");
+  }
+  /** 纯文本版（用于 docx） */
+  function lettersWithTextPlain(q, letters) {
+    const map = optionMapOf(q);
+    return letters.map((ch) => `${ch}，${map[ch] || ""}`).join("；");
+  }
+  /** 将题目选项转为 Map，例如 {A: 'xxx', B: 'yyy'} */
+  function optionMapOf(q) {
+    const map = {};
+    (q.options || []).forEach((opt) => {
+      const letter = opt.slice(0, 1);
+      const m = opt.match(/^[A-D]\.\s*(.*)$/);
+      map[letter] = m ? m[1] : opt;
+    });
+    return map;
   }
 
   // 事件绑定
