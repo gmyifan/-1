@@ -127,8 +127,16 @@ document.addEventListener("DOMContentLoaded", () => {
         let j = i + 1;
         while (j < lines.length && !/参考答案/.test(lines[j])) j++;
         const lineAns = lines[j] || "";
-        const ansMatch = lineAns.match(/参考答案[^:：]*[:：]\s*([AB])/);
-        const right = ansMatch ? [ansMatch[1]] : [];
+        // 兼容"对/错"和"A/B"两种答案格式
+        const ansMatch = lineAns.match(/参考答案[^:：]*[:：]\s*([对错AB])/);
+        let right = [];
+        if (ansMatch) {
+          const ans = ansMatch[1];
+          // 将"对/错"转换为"A/B"
+          if (ans === "对") right = ["A"];
+          else if (ans === "错") right = ["B"];
+          else right = [ans]; // 保持A/B不变
+        }
         const q = { type: "judge", title, options: ["A. 对", "B. 错"], answer: right };
         pushQuestion(judge, q);
         i = j + 1;
