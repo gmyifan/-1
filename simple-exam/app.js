@@ -29,8 +29,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const answerReviewEl = document.getElementById("answer-review");
 
   // 根据难度动态决定题库路径
-  function getMdPathByDifficulty() {
-    const val = difficultySelect && difficultySelect.value;
+  function getDifficulty() {
+    return (difficultySelect && difficultySelect.value) || "basic";
+  }
+  function getMdPathByDifficulty(diff) {
+    const val = diff || getDifficulty();
     if (val === "advanced") return "./有点难度的题目.md";
     return "./题库.md";
   }
@@ -388,7 +391,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 事件绑定
   btnStart.addEventListener("click", async () => {
-    const mdPath = getMdPathByDifficulty();
+    // 用户主动开始：清理旧进度，基于当前难度重新出题
+    try { localStorage.removeItem(STORAGE_KEY); } catch {}
+    const difficulty = getDifficulty();
+    const mdPath = getMdPathByDifficulty(difficulty);
     const bank = await loadQuestionBank(mdPath);
     appState.allQuestions = bank;
     appState.paper = generatePaper(bank);
@@ -399,6 +405,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderNavigator();
     startTimer();
     showScreen("exam");
+    saveState({ overwriteDifficulty: difficulty });
   });
 
   btnPrev.addEventListener("click", () => {
@@ -436,13 +443,15 @@ document.addEventListener("DOMContentLoaded", () => {
    * 保存/恢复进度（localStorage）
    * 小白解释：把题目、答案、当前题号和剩余时间存到浏览器本地，下次刷新可接着答。
    */
-  function saveState() {
+  function saveState(options = {}) {
     if (!appState.paper.length) return;
+    const difficulty = options.overwriteDifficulty || getDifficulty();
     const toSave = {
       paper: appState.paper,
       answers: appState.answers,
       currentIndex: appState.currentIndex,
       leftSeconds: appState.timer.leftSeconds,
+      difficulty,
       ts: Date.now(),
     };
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)); } catch {}
@@ -453,12 +462,19 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!raw) return false;
       const data = JSON.parse(raw);
       if (!data.paper || !Array.isArray(data.paper)) return false;
+      // 若当前选择的难度与保存的不一致，则不恢复
+      const currentDifficulty = getDifficulty();
+      if (data.difficulty && data.difficulty !== currentDifficulty) {
+        return false;
+      }
       const resume = confirm("检测到未完成的考试，是否继续上次进度？");
       if (!resume) { localStorage.removeItem(STORAGE_KEY); return false; }
       appState.paper = data.paper;
       appState.answers = data.answers || {};
       appState.currentIndex = Number.isInteger(data.currentIndex) ? data.currentIndex : 0;
       appState.timer.leftSeconds = typeof data.leftSeconds === "number" ? data.leftSeconds : 90*60;
+      // 同步选择器显示保存的难度
+      if (difficultySelect && data.difficulty) difficultySelect.value = data.difficulty;
       renderQuestion();
       renderNavigator();
       startTimer();
