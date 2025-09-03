@@ -34,8 +34,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   function getMdPathByDifficulty(diff) {
     const val = diff || getDifficulty();
-    if (val === "advanced") return "./有点难度的题目.md";
-    return "./题库.md";
+    // 使用英文文件名，避免中文路径在部分平台下 404
+    if (val === "advanced") return "./advanced.md";
+    return "./basic.md";
   }
   const STORAGE_KEY = "simpleExamStateV1";
 
