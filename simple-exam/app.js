@@ -106,14 +106,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const title = qMatch[2].replace(/\s+$/,'');
         const opts = [];
         let j = i + 1;
-        while (j < lines.length && /^\s*[A-D]\.\s/.test(lines[j])) {
-          const optText = lines[j].trim().replace(/^([A-D])\.\s*/, (m, g1) => `${g1}. `);
+        while (j < lines.length && /^\s*[A-E]\.\s/.test(lines[j])) {
+          const optText = lines[j].trim().replace(/^([A-E])\.\s*/, (m, g1) => `${g1}. `);
           opts.push(optText);
           j++;
         }
         const answerLine = (lines[j] || "").replace(/\s+/g, " ");
         // 兼容：参考答案: ABC、参考答案：ABC、【参考答案】: ABC、【参考答案】：ABC、【参考答案】: ABC (备注)
-        const ansMatch = answerLine.match(/参考答案[^:：]*[:：]\s*([A-D]{1,4})/);
+        // 支持A-E选项（如ABCDE）
+        const ansMatch = answerLine.match(/参考答案[^:：]*[:：]\s*([A-E]{1,5})/);
         const right = ansMatch ? ansMatch[1].trim().split("") : [];
         const q = { type: section, title, options: opts, answer: right };
         pushQuestion(section === "single" ? single : multiple, q);
