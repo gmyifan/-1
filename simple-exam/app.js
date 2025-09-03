@@ -91,10 +91,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     while (i < lines.length) {
-      const line = lines[i].trim();
-      if (line.startsWith("### 一、单选题")) section = "single";
-      if (line.startsWith("### 二、多选题")) section = "multiple";
-      if (line.startsWith("### 三、判断题")) section = "judge";
+      const rawLine = lines[i];
+      const line = rawLine.trim();
+      const normalized = line
+        .replace(/[\*`_]/g, "") // 去除粗体/斜体/代码标记
+        .replace(/\s+/g, " ");
+      // 兼容不同层级标题、加粗、带括号的计数文案
+      if (/单选题/.test(normalized) && !/^\d+\.\s/.test(normalized)) section = "single";
+      if (/多选题/.test(normalized) && !/^\d+\.\s/.test(normalized)) section = "multiple";
+      if (/判断题/.test(normalized) && !/^\d+\.\s/.test(normalized)) section = "judge";
 
       const qMatch = line.match(/^(\d+)\.\s+(.*)$/);
       if (qMatch && (section === "single" || section === "multiple")) {
