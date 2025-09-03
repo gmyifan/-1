@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnRestart = document.getElementById("btn-restart");
 
   const timerEl = document.getElementById("timer");
+  const difficultySelect = document.getElementById("difficulty");
   const remainEl = document.getElementById("remaining-count");
   const navigatorEl = document.getElementById("navigator");
   const questionContainer = document.getElementById("question-container");
@@ -27,7 +28,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const passTextEl = document.getElementById("pass-text");
   const answerReviewEl = document.getElementById("answer-review");
 
-  const MD_PATH = "./题库.md"; // 站点同目录题库（便于 GitHub Pages 部署）
+  // 根据难度动态决定题库路径
+  function getMdPathByDifficulty() {
+    const val = difficultySelect && difficultySelect.value;
+    if (val === "advanced") return "./有点难度的题目.md";
+    return "./题库.md";
+  }
   const STORAGE_KEY = "simpleExamStateV1";
 
   /**
@@ -53,8 +59,8 @@ document.addEventListener("DOMContentLoaded", () => {
    * 拉取并解析题库 Markdown
    * 小白解释：读 `题库.md` 文本，并解析成题目对象，分三类：单选、多选、判断。
    */
-  async function loadQuestionBank() {
-    const res = await fetch(MD_PATH);
+  async function loadQuestionBank(mdPath) {
+    const res = await fetch(mdPath);
     const text = await res.text();
     return parseMarkdownToQuestions(text);
   }
@@ -382,7 +388,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 事件绑定
   btnStart.addEventListener("click", async () => {
-    const bank = await loadQuestionBank();
+    const mdPath = getMdPathByDifficulty();
+    const bank = await loadQuestionBank(mdPath);
     appState.allQuestions = bank;
     appState.paper = generatePaper(bank);
     appState.answers = {};
