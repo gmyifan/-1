@@ -1,0 +1,13 @@
+{
+  "name": "network-exam-vercel",
+  "private": true,
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "echo Build handled by @vercel/static-build for exam-system"
+  },
+  "dependencies": {
+    "@vercel/postgres": "^0.5.1",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
