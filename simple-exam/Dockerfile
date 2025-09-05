@@ -1,26 +1,23 @@
 # -------- Build stage --------
-FROM node:18-alpine AS builder
-
-# 安装构建所需工具（某些依赖会用到）
-RUN apk add --no-cache git python3 make g++
+FROM node:18-slim AS builder
 
 WORKDIR /app
 
-# 使用国内源并提高容错；关闭无关检查，加大超时
+# 使用国内源并提高容错
 ENV NPM_CONFIG_REGISTRY=https://registry.npmmirror.com \
     NPM_CONFIG_FUND=false \
     NPM_CONFIG_AUDIT=false \
-    NPM_CONFIG_FETCH_RETRIES=5 \
+    NPM_CONFIG_FETCH_RETRIES=3 \
     NPM_CONFIG_FETCH_RETRY_FACTOR=2 \
-    NPM_CONFIG_FETCH_RETRY_MINTIMEOUT=20000 \
-    NPM_CONFIG_FETCH_RETRY_MAXTIMEOUT=120000 \
+    NPM_CONFIG_FETCH_RETRY_MINTIMEOUT=10000 \
+    NPM_CONFIG_FETCH_RETRY_MAXTIMEOUT=60000 \
     CI=true
 
 # 先仅拷贝依赖清单，最大化缓存命中
 COPY package*.json ./
 
-# 尝试 npm ci；失败则回退到 npm install（兼容缺锁文件/冲突）
-RUN npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+# 简化安装：直接使用 npm install，避免 ci 的严格要求
+RUN npm install || npm install --legacy-peer-deps
 
 # 再拷贝源码并构建
 COPY . .
