@@ -15,7 +15,7 @@ build/
 .cache/
 
 # Nested repo (ignore to避免嵌套仓库问题)
-exam-system/
+
 
 # Env
 .env
