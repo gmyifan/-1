@@ -17,7 +17,7 @@ services:
 
   web:
     build:
-      context: ./simple-exam
+      context: ./exam-system
       dockerfile: Dockerfile
     depends_on:
       - backend
